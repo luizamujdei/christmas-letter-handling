@@ -18,8 +18,7 @@ import java.io.IOException;
 import java.net.URI;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class SendChristmasLetterTest {
@@ -103,6 +102,23 @@ public class SendChristmasLetterTest {
         assertEquals("Luiza", messageNode.get("name").asText() , "The name in the message received is not the expected one");
         assertEquals("fimo", messageNode.get("wishes").asText(), "The wishes in the message received are not the expected ones");
         assertEquals("Iasi",messageNode.get("location").asText(),  "The location in the message received is not the expected one");
+    }
+
+    @Test
+    public void whenSendChristmasLetter_ToNonExistentTopic_thenExceptionIsThrown() {
+        //Publish message to the SNS Topic
+        String testMessage = "{\n" +
+                "    \"email\": \"luiza.mujdei@gmail.com\",\n" +
+                "    \"name\": \"Luiza\",\n" +
+                "    \"wishes\": \"fimo\",\n" +
+                "    \"location\": \"Iasi\"\n" +
+                "}";
+
+        SnsException exception = assertThrows(SnsException.class, ()
+                -> snsClient.publish(PublishRequest.builder().topicArn("arn:aws:sqs:us-east-1:000002000000:invalidTopic")
+                .message(testMessage).build()));
+
+        assertTrue(exception.getMessage().contains("Topic does not exist"));
     }
 
     @AfterAll

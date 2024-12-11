@@ -20,8 +20,8 @@ public class ChristmasLetterController {
 
     @PostMapping("/send")
     public ResponseEntity<String> sendChristmasLetter(@Valid @RequestBody ChristmasLetter letter) {
-     String result = christmasLetterService.sendChristmasLetter(letter);
-     return new ResponseEntity<>(result, HttpStatus.CREATED);
+        christmasLetterService.sendChristmasLetter(letter);
+        return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
 }

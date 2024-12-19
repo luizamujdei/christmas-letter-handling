@@ -1,7 +1,7 @@
 package com.christmas.letter.sender.controller;
 
 import com.christmas.letter.sender.model.ChristmasLetter;
-import com.christmas.letter.sender.service.ChristmasLetterService;
+import com.christmas.letter.sender.service.ChristmasLetterSenderService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -19,15 +19,15 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@WebMvcTest(ChristmasLetterController.class)
-public class ChristmasLetterControllerTest {
+@WebMvcTest(LetterSenderController.class)
+public class LetterSenderControllerTest {
     @Autowired
     private MockMvc mockMvc;
 
     private final ObjectMapper objectMapper = new ObjectMapper();
 
     @MockBean
-    private ChristmasLetterService christmasLetterService;
+    private ChristmasLetterSenderService christmasLetterSenderService;
 
     private static final String PATH = "/letters/send";
 

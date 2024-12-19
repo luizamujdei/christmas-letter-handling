@@ -8,7 +8,7 @@ import org.springframework.stereotype.Service;
 
 @RequiredArgsConstructor
 @Service
-public class ChristmasLetterService {
+public class ChristmasLetterSenderService {
 
     private final SnsTemplate snsTemplate;
 

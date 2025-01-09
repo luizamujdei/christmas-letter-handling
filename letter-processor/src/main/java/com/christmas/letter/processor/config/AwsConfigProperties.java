@@ -1,5 +1,8 @@
 package com.christmas.letter.processor.config;
 
+import com.christmas.letter.processor.model.mapper.SqsMessageMapper;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import io.awspring.cloud.sqs.config.SqsMessageListenerContainerFactory;
 import lombok.Data;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -9,8 +12,7 @@ import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
 import software.amazon.awssdk.enhanced.dynamodb.DynamoDbEnhancedClient;
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
-import software.amazon.awssdk.services.sns.SnsClient;
-import software.amazon.awssdk.services.sqs.SqsClient;
+import software.amazon.awssdk.services.sqs.SqsAsyncClient;
 
 import java.net.URI;
 
@@ -18,35 +20,17 @@ import java.net.URI;
 @Configuration
 public class AwsConfigProperties {
 
-    @Value("{aws.access.key.id}")
+    @Value("${aws.access.key.id}")
     private String accessKeyId;
 
-    @Value("{aws.secret.access.key}")
+    @Value("${aws.secret.access.key}")
     private String secretKeyId;
 
-    @Value("{aws.region}")
+    @Value("${aws.region}")
     private String region;
 
-    @Value("{aws.sns.endpoint.url}")
+    @Value("${aws.sns.endpoint.url}")
     private String snsEndpointUrl;
-
-    @Bean
-    public SnsClient snsClient(){
-        return SnsClient.builder()
-                .region(Region.of(region))
-                .endpointOverride(URI.create(snsEndpointUrl))
-                .credentialsProvider(StaticCredentialsProvider.create(AwsBasicCredentials.create(accessKeyId, secretKeyId)))
-                .build();
-    }
-
-    @Bean
-    public SqsClient sqsClient(){
-        return SqsClient.builder()
-                .region(Region.of(region))
-                .endpointOverride(URI.create(snsEndpointUrl))
-                .credentialsProvider(StaticCredentialsProvider.create(AwsBasicCredentials.create(accessKeyId, secretKeyId)))
-                .build();
-    }
 
     @Bean
     public DynamoDbClient dynamoDbClient(){
@@ -61,6 +45,14 @@ public class AwsConfigProperties {
     public DynamoDbEnhancedClient dynamoDbEnhancedClient(){
         return DynamoDbEnhancedClient.builder()
                 .dynamoDbClient(dynamoDbClient())
+                .build();
+    }
+
+    @Bean
+    public SqsMessageListenerContainerFactory<Object> defaultSqsListenerContainerFactory(SqsAsyncClient sqsAsyncClient, ObjectMapper objectMapper){
+        return SqsMessageListenerContainerFactory.builder()
+                .sqsAsyncClient(sqsAsyncClient)
+                .configure(options -> options.messageConverter(new SqsMessageMapper(objectMapper)))
                 .build();
     }
 }

@@ -7,7 +7,7 @@ set -e
 #Variables
 TOPIC_NAME="christmas-letters-topic"
 QUEUE_NAME="christmas-letters-queue"
-TABLE_NAME="ChristmasLetters"
+TABLE_NAME="christmas_letter"
 
 echo "Creating SNS topic $TOPIC_NAME"
 awslocal sns create-topic --name $TOPIC_NAME || true

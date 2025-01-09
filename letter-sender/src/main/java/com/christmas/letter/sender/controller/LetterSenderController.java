@@ -1,7 +1,7 @@
 package com.christmas.letter.sender.controller;
 
 import com.christmas.letter.sender.model.ChristmasLetter;
-import com.christmas.letter.sender.service.ChristmasLetterService;
+import com.christmas.letter.sender.service.ChristmasLetterSenderService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -14,13 +14,13 @@ import lombok.RequiredArgsConstructor;
 @RestController
 @RequestMapping("/letters")
 @RequiredArgsConstructor
-public class ChristmasLetterController {
+public class LetterSenderController {
 
-    private final ChristmasLetterService christmasLetterService;
+    private final ChristmasLetterSenderService christmasLetterSenderService;
 
     @PostMapping("/send")
     public ResponseEntity<String> sendChristmasLetter(@Valid @RequestBody ChristmasLetter letter) {
-        christmasLetterService.sendChristmasLetter(letter);
+        christmasLetterSenderService.sendChristmasLetter(letter);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 

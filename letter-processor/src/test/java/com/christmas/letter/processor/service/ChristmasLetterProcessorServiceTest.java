@@ -1,6 +1,7 @@
 package com.christmas.letter.processor.service;
 
 import com.christmas.letter.processor.exception.NotFoundException;
+import com.christmas.letter.processor.model.CachedPage;
 import com.christmas.letter.processor.model.ChristmasLetter;
 import com.christmas.letter.processor.repository.ChristmasLetterRepository;
 import com.christmas.letter.processor.utils.LetterTestHelper;
@@ -59,7 +60,7 @@ public class ChristmasLetterProcessorServiceTest {
         Pageable pageable = PageRequest.of(0, 5);
         when(letterRepository.findAll(pageable)).thenReturn(savedPage);
 
-        Page<ChristmasLetter> result = letterProcessorService.getLetters(pageable);
+        CachedPage<ChristmasLetter> result = letterProcessorService.getLetters(pageable);
 
         assertThat(result.getTotalElements()).isOne();
     }

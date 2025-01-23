@@ -16,4 +16,46 @@ services:
       - ./localstack-data:/var/lib/localstack #Persist data
       - ./localstack-setup.sh:/etc/localstack/init/ready.d/init.sh
 
+  letter-sender-service:
+    container_name: letter-sender-service
+    image: letter-sender-service
+    ports:
+      - 8081:8081
+    depends_on:
+      - localstack
+    environment:
+      aws.sns.topic.arn: 'arn:aws:sns:us-east-1:000000000000:christmas-letters-topic'
+      aws.sns.region: 'us-east-1'
+      aws.sns.endpoint.url: 'http://localhost:4566'
+      aws.secret.access.key: test
+      aws.secret.access.secret: test
 
+  letter-processor-service:
+    container_name: letter-processor-service
+    image: letter-processor-service
+    ports:
+      - 8082:8082
+    depends_on:
+      - localstack
+      - redis-service
+    environment:
+      aws.sqs.queue.url: 'http://localhost:4566/000000000000/christmas-letters-queue'
+      aws.sqs.region: 'us-east-1'
+      aws.sqs.endpoint.url: 'http://localhost:4566'
+      aws.secret.access.key: test
+      aws.secret.access.secret: test
+      redis.host: 'redis-service'
+      redis.port: '6379'
+      redis.ttl: '60'
+
+  redis-service:
+    container_name: redis-service
+    image: redis-service
+    ports:
+      - 6379:6379
+    command: ["redis-server"]
+    volumes:
+      - redis-data:/data
+
+volumes:
+  redis-data:

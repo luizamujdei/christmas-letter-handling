@@ -52,9 +52,9 @@ public class LetterProcessorControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.content").isArray())
                 .andExpect(jsonPath("$.totalElements").value(letters.size()))
-                .andExpect(jsonPath("$.pageable.pageSize").value(pageable.getPageSize()))
-                .andExpect(jsonPath("$.pageable.pageNumber").value(pageable.getPageNumber()))
-                .andExpect(jsonPath("$.pageable.offset").value(pageable.getOffset()));
+                .andExpect(jsonPath("$.pageSize").value(pageable.getPageSize()))
+                .andExpect(jsonPath("$.pageNumber").value(pageable.getPageNumber()))
+                .andExpect(jsonPath("$.offset").value(pageable.getOffset()));
     }
 
     @Test

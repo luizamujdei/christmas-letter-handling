@@ -25,7 +25,7 @@ public class ConfigurableRedisCacheResolver implements CacheResolver {
 
     private final CacheManager cacheManager;
 
-    @Value("${redis.port")
+    @Value("${redis.ttl")
     private int cacheTTL;
 
 

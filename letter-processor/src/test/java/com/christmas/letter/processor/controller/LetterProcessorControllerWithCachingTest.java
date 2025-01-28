@@ -18,6 +18,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.data.domain.*;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -55,6 +56,7 @@ public class LetterProcessorControllerWithCachingTest extends RedisTestContainer
     private static final String PATH = "/letters";
 
     @Test
+    @WithMockUser(roles={"SANTA"})
     void whenGivenPage_thenReturnCachedPageLetters() throws Exception {
         Set<String> keys = redisTemplate.keys("60m-letters:*");
         if (!keys.isEmpty()) {

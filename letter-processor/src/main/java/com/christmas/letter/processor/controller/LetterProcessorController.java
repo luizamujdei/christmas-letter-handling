@@ -8,6 +8,7 @@ import jakarta.validation.constraints.Email;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -21,11 +22,13 @@ public class LetterProcessorController {
     private final ChristmasLetterProcessorService christmasLetterProcessorService;
 
     @GetMapping("/{email}")
+    @PreAuthorize("hasAnyAuthority('ELF','SANTA','MRS_CLAUS')")
     public ChristmasLetter getLetterByEmail(@Valid @Email(message = "Email is not valid") @PathVariable String email){
         return christmasLetterProcessorService.getLetterByEmail(email);
     }
 
     @GetMapping
+    @PreAuthorize("hasAnyAuthority('ELF','SANTA','MRS_CLAUS')")
     public CachedPage<ChristmasLetter> getLetters(@PageableDefault Pageable pageable){
         return christmasLetterProcessorService.getLetters(pageable);
     }

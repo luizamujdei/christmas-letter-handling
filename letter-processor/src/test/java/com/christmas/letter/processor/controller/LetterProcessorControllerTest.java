@@ -12,6 +12,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.security.test.context.support.WithMockUser;
 
 import java.util.List;
 import java.util.stream.IntStream;
@@ -32,6 +33,7 @@ public class LetterProcessorControllerTest {
     private static final String PATH = "/letters";
 
     @Test
+    @WithMockUser(roles={"ELF"})
     void whenInvalidEmailProvided_thenThrowValidationException() throws Exception {
         String email = "invalid";
 
@@ -43,6 +45,7 @@ public class LetterProcessorControllerTest {
 
     @ParameterizedTest
     @MethodSource("generateLetters")
+    @WithMockUser(roles={"ELF"})
     void whenGivenPage_thenReturnPageLetters(Pageable pageable, List<ChristmasLetter> letters) throws Exception {
         letterRepository.saveAll(letters);
 
@@ -57,7 +60,24 @@ public class LetterProcessorControllerTest {
                 .andExpect(jsonPath("$.offset").value(pageable.getOffset()));
     }
 
+    @ParameterizedTest
+    @MethodSource("generateLetters")
+    void whenUnauthorizedUser_thenReturnUnauthorizedMessage(Pageable pageable, List<ChristmasLetter> letters) throws Exception {
+        letterRepository.saveAll(letters);
+
+        mockMvc.perform(get(PATH)
+                        .param("page", String.valueOf(pageable.getPageNumber()))
+                        .param("size", String.valueOf(pageable.getPageSize())))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.content").isArray())
+                .andExpect(jsonPath("$.totalElements").value(letters.size()))
+                .andExpect(jsonPath("$.pageSize").value(pageable.getPageSize()))
+                .andExpect(jsonPath("$.pageNumber").value(pageable.getPageNumber()))
+                .andExpect(jsonPath("$.offset").value(pageable.getOffset()));
+    }
+
     @Test
+    @WithMockUser(roles={"SANTA"})
     void whenUnsavedEmailProvided_thenThrowNotFoundException() throws Exception {
         String email = "unsaved@test.com";
 
